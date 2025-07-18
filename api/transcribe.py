@@ -7,7 +7,7 @@ load_dotenv()
 
 app = Flask(__name__)
 
-@app.route('/api/transcribe', methods=['POST'])
+@app.route('/', methods=['POST'])
 def transcribe_audio():
     API_KEY = os.getenv("MISTRAL_API_KEY")
     ENDPOINT = "https://api.mistral.ai/v1/audio/transcriptions"
