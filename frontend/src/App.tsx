@@ -1,6 +1,7 @@
 import { ReactMediaRecorder } from "react-media-recorder";
 import { useState } from "react";
 import "./App.css";
+import InstallPWA from "./components/InstallPWA";
 
 function App() {
   const [transcription, setTranscription] = useState("");
@@ -69,6 +70,8 @@ function App() {
         {error && <p className="error">Erreur: {error}</p>}
         {transcription && <p className="transcription-text">{transcription}</p>}
       </div>
+      
+      <InstallPWA />
     </div>
   );
 }
