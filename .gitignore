@@ -1,0 +1,21 @@
+# Environnement Virtuel Python
+.venv/
+api/__pycache__/
+
+# Dépendances Node
+frontend/node_modules/
+frontend/dist/
+
+# Fichiers d'environnement (NE JAMAIS COMMIT)
+.env*
+
+# Fichiers de log
+*.log
+
+# Fichiers générés par l'OS ou les IDE
+.DS_Store
+.vscode/
+.idea/
+
+# Vercel
+.vercel 

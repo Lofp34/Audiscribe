@@ -1,16 +1,5 @@
 {
-  "builds": [
-    {
-      "src": "frontend/package.json",
-      "use": "@vercel/static-build",
-      "config": {
-        "buildCommand": "npm run build",
-        "outputDirectory": "dist"
-      }
-    },
-    {
-      "src": "api/transcribe.py",
-      "use": "@vercel/python"
-    }
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/frontend/$1" }
   ]
 } 
