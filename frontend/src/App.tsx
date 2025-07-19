@@ -7,6 +7,7 @@ function App() {
   const [transcription, setTranscription] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [copySuccess, setCopySuccess] = useState(false);
 
   const handleStop = async (_blobUrl: string, blob: Blob) => {
     setIsLoading(true);
@@ -40,6 +41,18 @@ function App() {
     }
   };
 
+  const copyToClipboard = () => {
+    if (transcription) {
+      navigator.clipboard.writeText(transcription).then(() => {
+        setCopySuccess(true);
+        setTimeout(() => setCopySuccess(false), 2000); // Réinitialise après 2 secondes
+      }, () => {
+        // Gérer l'échec de la copie si nécessaire
+        console.error("Échec de la copie dans le presse-papiers");
+      });
+    }
+  };
+
   return (
     <div className="container">
       <h1>Audio Scribe</h1>
@@ -65,7 +78,14 @@ function App() {
       />
 
       <div className="transcription-container">
-        <h2>Transcription</h2>
+        <div className="transcription-header">
+          <h2>Transcription</h2>
+          {transcription && (
+            <button onClick={copyToClipboard} className="copy-btn">
+              {copySuccess ? "Copié !" : "Copier"}
+            </button>
+          )}
+        </div>
         {isLoading && <p className="loading">Transcription en cours...</p>}
         {error && <p className="error">Erreur: {error}</p>}
         {transcription && <p className="transcription-text">{transcription}</p>}

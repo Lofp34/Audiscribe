@@ -95,6 +95,35 @@ audio {
   background-color: #2c2c2c;
   min-height: 100px;
   text-align: left;
+  width: 100%;
+}
+
+.transcription-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.copy-btn {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.2s;
+}
+
+.copy-btn:hover {
+  background-color: #0056b3;
+}
+
+.transcription-text {
+  background-color: #f9f9f9;
+  white-space: pre-wrap;
+  word-wrap: break-word;
 }
 
 .loading, .error {
@@ -104,9 +133,4 @@ audio {
 
 .error {
   color: #ff6b6b;
-}
-
-.transcription-text {
-  white-space: pre-wrap;
-  word-wrap: break-word;
 }
