@@ -22,6 +22,7 @@ function App() {
   }, [audioUrl]);
 
   const handleStop = (_blobUrl: string, blob: Blob) => {
+    console.log('Blob enregistré. Type MIME:', blob.type); // Étape de débogage
     setAudioBlob(blob);
     // Crée une nouvelle URL d'objet à partir du blob.
     // C'est plus fiable que d'utiliser celle fournie par la librairie.
@@ -39,7 +40,7 @@ function App() {
     setTranscription("");
 
     try {
-      const audioFile = new File([audioBlob], "recording.mp3", { type: "audio/mp3" });
+      const audioFile = new File([audioBlob], "recording.wav", { type: "audio/wav" });
       const formData = new FormData();
       formData.append("file", audioFile);
 
@@ -71,7 +72,7 @@ function App() {
     const url = URL.createObjectURL(audioBlob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `enregistrement-${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.mp3`;
+    a.download = `enregistrement-${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.wav`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -96,6 +97,7 @@ function App() {
       
       <ReactMediaRecorder
         audio
+        mediaRecorderOptions={{ mimeType: "audio/wav" }} // Correction: utiliser mediaRecorderOptions
         onStop={handleStop}
         render={({ status, startRecording, stopRecording }) => (
           <div className="recorder">
