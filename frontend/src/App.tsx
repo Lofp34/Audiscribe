@@ -97,7 +97,7 @@ function App() {
       
       <ReactMediaRecorder
         audio
-        mimeType="audio/wav" // Forcer l'enregistrement en WAV
+        mediaRecorderOptions={{ mimeType: "audio/wav" }} // Correction: utiliser mediaRecorderOptions
         onStop={handleStop}
         render={({ status, startRecording, stopRecording }) => (
           <div className="recorder">
