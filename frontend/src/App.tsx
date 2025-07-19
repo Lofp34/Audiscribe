@@ -1,5 +1,5 @@
 import { ReactMediaRecorder } from "react-media-recorder";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "./App.css";
 import InstallPWA from "./components/InstallPWA";
 
@@ -8,14 +8,39 @@ function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [copySuccess, setCopySuccess] = useState(false);
+  const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
+  const [audioUrl, setAudioUrl] = useState<string | null>(null);
 
-  const handleStop = async (_blobUrl: string, blob: Blob) => {
+  useEffect(() => {
+    // Nettoie l'URL de l'objet pour libérer la mémoire lorsque
+    // le composant est démonté ou qu'une nouvelle URL est créée.
+    return () => {
+      if (audioUrl) {
+        URL.revokeObjectURL(audioUrl);
+      }
+    };
+  }, [audioUrl]);
+
+  const handleStop = (_blobUrl: string, blob: Blob) => {
+    console.log('Blob enregistré. Type MIME:', blob.type); // Étape de débogage
+    setAudioBlob(blob);
+    // Crée une nouvelle URL d'objet à partir du blob.
+    // C'est plus fiable que d'utiliser celle fournie par la librairie.
+    const newAudioUrl = URL.createObjectURL(blob);
+    setAudioUrl(newAudioUrl);
+    setTranscription("");
+    setError(null);
+  };
+
+  const handleTranscribe = async () => {
+    if (!audioBlob) return;
+    
     setIsLoading(true);
     setError(null);
     setTranscription("");
 
     try {
-      const audioFile = new File([blob], "recording.mp3", { type: "audio/mp3" });
+      const audioFile = new File([audioBlob], "recording.wav", { type: "audio/wav" });
       const formData = new FormData();
       formData.append("file", audioFile);
 
@@ -41,13 +66,25 @@ function App() {
     }
   };
 
+  const downloadAudio = () => {
+    if (!audioBlob) return;
+    
+    const url = URL.createObjectURL(audioBlob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `enregistrement-${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.wav`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
   const copyToClipboard = () => {
     if (transcription) {
       navigator.clipboard.writeText(transcription).then(() => {
         setCopySuccess(true);
-        setTimeout(() => setCopySuccess(false), 2000); // Réinitialise après 2 secondes
+        setTimeout(() => setCopySuccess(false), 2000);
       }, () => {
-        // Gérer l'échec de la copie si nécessaire
         console.error("Échec de la copie dans le presse-papiers");
       });
     }
@@ -60,8 +97,9 @@ function App() {
       
       <ReactMediaRecorder
         audio
+        mimeType="audio/wav" // Forcer l'enregistrement en WAV
         onStop={handleStop}
-        render={({ status, startRecording, stopRecording, mediaBlobUrl }) => (
+        render={({ status, startRecording, stopRecording }) => (
           <div className="recorder">
             <div className="controls">
               <button onClick={startRecording} disabled={status === "recording"}>
@@ -72,10 +110,24 @@ function App() {
               </button>
             </div>
             <p className="status">Statut: <span>{status}</span></p>
-            {mediaBlobUrl && status === 'stopped' && <audio src={mediaBlobUrl} controls />}
           </div>
         )}
       />
+
+      {audioUrl && (
+        <div className="audio-container">
+          <h2>Enregistrement</h2>
+          <audio src={audioUrl} controls />
+          <div className="audio-actions">
+            <button onClick={downloadAudio} className="download-btn">
+              Télécharger
+            </button>
+            <button onClick={handleTranscribe} className="transcribe-btn">
+              Transcrire
+            </button>
+          </div>
+        </div>
+      )}
 
       <div className="transcription-container">
         <div className="transcription-header">
